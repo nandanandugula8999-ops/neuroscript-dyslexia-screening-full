@@ -3,5 +3,3 @@ __pycache__/
 venv/
 .venv/
 .env
-models/MobileNetV2_RF_Original.pkl
-models/final_clean_cnn_random_forest.pkl
