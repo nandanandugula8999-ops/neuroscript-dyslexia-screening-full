@@ -99,7 +99,13 @@ def get_classifier(model_key):
     with _model_lock:
         if model_key not in _model_cache:
             path = os.path.join(MODELS_DIR, MODEL_FILES[model_key])
-            _model_cache[model_key] = joblib.load(path)
+            try:
+                # Memory-map the large numpy arrays inside the pickle so the
+                # ~300 MB Random Forest models fit on small-memory hosts.
+                _model_cache[model_key] = joblib.load(path, mmap_mode="r")
+            except Exception as exc:
+                label = MODEL_REGISTRY[model_key]["label"]
+                raise ValueError(f"Could not load {label}: {exc}") from exc
         return _model_cache[model_key]
 
 
